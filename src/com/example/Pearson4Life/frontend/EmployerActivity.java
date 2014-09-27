@@ -27,7 +27,7 @@ public class EmployerActivity extends DrawerActivity {
 
     private String _tab;
 
-    private String _employer;
+    private int _employer;
 
     private NfcAdapter _nfcAdapter;
 
@@ -39,7 +39,7 @@ public class EmployerActivity extends DrawerActivity {
         addTab(TAB_USERS);
 
         final Bundle bundle = getIntent().getExtras();
-        _employer = bundle.getString(KEY_EMPLOYER);
+        _employer = bundle.getInt(KEY_EMPLOYER);
 
         _nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (_nfcAdapter == null) {
@@ -68,6 +68,10 @@ public class EmployerActivity extends DrawerActivity {
             fragment = new EmployerRolesFragment();
         } else if (TAB_USERS.equals(tab)) {
             fragment = new EmployerUsersFragment();
+
+            final Bundle args = new Bundle();
+            args.putInt(KEY_EMPLOYER, _employer);
+            fragment.setArguments(args);
         }
 
         final FragmentManager fm = getFragmentManager();

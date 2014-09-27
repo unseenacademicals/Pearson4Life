@@ -48,8 +48,8 @@ public class Bonsai {
         return mapper.readValue(response, Role[].class);
     }
     
-    public static User[] getNearbyUsers(Location location) throws Exception {
-        InputStream response = doHTTP("/users/near/" + location.latitude + "/" + location.longitude, "GET");
+    public static User[] getNearbyUsers(double latitude, double longitude) throws Exception {
+        InputStream response = doHTTP("/users/near/" + latitude + "/" + longitude, "GET");
         return mapper.readValue(response, User[].class);
     }
     

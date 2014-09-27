@@ -50,7 +50,7 @@ public class LoginActivity extends Activity {
         if (employerMode) {
             final Intent intent = new Intent(this, EmployerActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            intent.putExtra(EmployerActivity.KEY_EMPLOYER, user);
+            intent.putExtra(EmployerActivity.KEY_EMPLOYER, Integer.parseInt((user)));
             startActivity(intent);
         } else {
             final Intent intent = new Intent(this, UserActivity.class);

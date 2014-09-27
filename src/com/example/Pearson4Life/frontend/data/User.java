@@ -16,6 +16,15 @@ public class User {
     private String acclaim_id;
     private double latitude;
     private double longitude;
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
 
     public Location getLocationObject () {
         return new Location(latitude, longitude);

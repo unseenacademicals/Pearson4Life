@@ -4,14 +4,16 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.widget.Toast;
 import com.example.Pearson4Life.R;
+import com.example.Pearson4Life.frontend.data.Bonsai;
+import com.example.Pearson4Life.frontend.data.User;
 
 /**
  * Created by Kyle on 9/27/2014.
@@ -27,9 +29,9 @@ public class UserActivity extends DrawerActivity {
 
     private String _tab;
 
-    private String _user;
-
     private NfcAdapter _nfcAdapter;
+
+    private volatile User _user;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,7 +41,7 @@ public class UserActivity extends DrawerActivity {
         addTab(TAB_EMPLOYERS);
 
         final Bundle bundle = getIntent().getExtras();
-        _user = bundle.getString(KEY_USER);
+        getUser(bundle.getString(KEY_USER));
 
         _nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (_nfcAdapter == null) {
@@ -52,6 +54,19 @@ public class UserActivity extends DrawerActivity {
         }
     }
 
+    private void getUser(final String id) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    _user = Bonsai.getUser(Integer.parseInt(id));
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to retrieve user for id: " + id, e);
+                }
+            }
+        }).start();
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -60,6 +75,8 @@ public class UserActivity extends DrawerActivity {
 
     @Override
     protected void openTab(final String tab) {
+        if (_user == null) { return; }
+
         Fragment fragment = null;
 
         if (_tab != null && _tab.equals(tab)) {
@@ -68,6 +85,10 @@ public class UserActivity extends DrawerActivity {
             fragment = new UserBadgesFragment();
         } else if (TAB_EMPLOYERS.equals(tab)) {
             fragment = new UserEmployersFragment();
+
+            final Bundle args = new Bundle();
+            args.putString(KEY_USER, _user.getAcclaim_id());
+            fragment.setArguments(args);
         }
 
         final FragmentManager fm = getFragmentManager();
@@ -78,7 +99,7 @@ public class UserActivity extends DrawerActivity {
 
         // Insert the fragment by replacing any existing fragment
         fm.beginTransaction()
-                .replace(R.id.content_frame, fragment)
+                .replace(R.id.content_frame, fragment, null)
                 .commit();
 
         _tab = tab;

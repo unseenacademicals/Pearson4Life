@@ -47,7 +47,8 @@ public class Pearson {
 
     private static InputStream doHTTP(String url, String method)
             throws Exception {
-        URL obj = new URL(Uri.encode(BASE_URL + url));
+        URL obj = new URL(BASE_URL + url);
+        Log.i(TAG, obj.toString());
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod(method);
 

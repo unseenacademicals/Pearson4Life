@@ -61,6 +61,8 @@ public class UserEmployersFragment extends ListFragment {
 
         _user = getArguments().getString(UserActivity.KEY_USER);
 
+        Log.i(TAG, "User: " + _user);
+
         if (_location != null) {
             search(_user, _location.getLatitude(), _location.getLongitude());
         }
@@ -86,41 +88,49 @@ public class UserEmployersFragment extends ListFragment {
                         public View getView (final int position, final View convertView, final ViewGroup parent) {
                             final View view = convertView == null ? createView(parent) : convertView;
 
-                            final Employer employer = getItem(position);
+                            try {
+                                final Employer employer = getItem(position);
 
-                            int maxPercent = 0;
-                            String maxRole = "N/A";
+                                int maxPercent = 0;
+                                String maxRole = "N/A";
 
-                            for (Role role : employer.getRoles()) {
-                                int count = 0;
-                                final String[] roleBadges = role.getBadges();
-                                for (int i = 0; i < roleBadges.length; i++) {
-                                    if (badges.contains(roleBadges[i])) {
-                                        count++;
+                                for (Role role : employer.getRoles()) {
+                                    int count = 0;
+                                    final String[] roleBadges = role.getBadges();
+                                    for (int i = 0; i < roleBadges.length; i++) {
+                                        if (badges.contains(roleBadges[i])) {
+                                            count++;
+                                        }
+                                    }
+
+                                    count = count / roleBadges.length;
+                                    if (maxPercent <= count) {
+                                        maxPercent = count;
+                                        maxRole = role.getName();
                                     }
                                 }
 
-                                count = count / roleBadges.length;
-                                if (maxPercent < count) {
-                                    maxPercent = count;
-                                    maxRole = role.getName();
-                                }
+                                final TextView textEmployer = (TextView) view.findViewById(R.id.text_user);
+                                final TextView textRole = (TextView) view.findViewById(R.id.text_role);
+                                final TextView textMatch = (TextView) view.findViewById(R.id.text_match);
+
+                                textEmployer.setText(employer.getName());
+                                textRole.setText(maxRole);
+                                textMatch.setText(maxPercent + "%");
+                            } catch (Exception e) {
+                                Log.e(TAG, "IDK", e);
                             }
 
-                            final TextView textEmployer = (TextView) view.findViewById(R.id.text_user);
-                            final TextView textRole = (TextView) view.findViewById(R.id.text_role);
-                            final TextView textMatch = (TextView) view.findViewById(R.id.text_match);
-
-                            textEmployer.setText(employer.getName());
-                            textRole.setText(maxRole);
-                            textMatch.setText(maxPercent + "%");
-
-                            return convertView;
+                            return view;
                         }
 
                         private View createView(final ViewGroup parent) {
-                            final LayoutInflater inflater = LayoutInflater.from(UserEmployersFragment.this.getActivity());
-                            return inflater.inflate(R.layout.search_list_item, parent, false);
+                            final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                            final View ret = inflater.inflate(R.layout.search_list_item, parent, false);
+                            if (ret == null) {
+                                Log.i(TAG, "View is NULL");
+                            }
+                            return ret;
                         }
                     };
 
@@ -134,8 +144,13 @@ public class UserEmployersFragment extends ListFragment {
                 } catch (Exception e) {
                     Log.e(TAG, "Failed to retrieve local employers list.", e);
 
-                    Toast.makeText(UserEmployersFragment.this.getActivity(), "Failed to retrieve local employers list.",
-                            Toast.LENGTH_LONG).show();
+                    UserEmployersFragment.this.getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(UserEmployersFragment.this.getActivity(), "Failed to retrieve local employers list.",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
             }
         }).start();
