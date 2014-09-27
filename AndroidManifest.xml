@@ -9,10 +9,13 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.NFC" />
+
+    <uses-feature android:name="android.hardware.nfc" android:required="true" />
 
     <uses-sdk android:minSdkVersion="16"/>
 
-    <application android:label="@string/app_name" android:icon="@drawable/ic_launcher" android:theme="@android:style/Theme.Holo.Light">
+    <application android:label="@string/app_name" android:icon="@drawable/icon" android:theme="@android:style/Theme.Holo.Light">
         <activity android:name=".frontend.LoginActivity"
                   android:label="@string/app_name">
             <intent-filter>
@@ -20,8 +23,19 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".frontend.DrawerActivity"/>
-        <activity android:name=".frontend.EmployerActivity"/>
-        <activity android:name=".frontend.UserActivity"/>
+        <activity android:name=".frontend.EmployerActivity">
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="application/com.example.Pearson4Life.frontend.EmployerActivity"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".frontend.UserActivity">
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="application/com.example.Pearson4Life.frontend.UserActivity"/>
+            </intent-filter>
+        </activity>
     </application>
 </manifest>

@@ -1,13 +1,19 @@
 package com.example.Pearson4Life.frontend;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import com.example.Pearson4Life.R;
 
 public class LoginActivity extends Activity {
-    private boolean _employerMode;
+    private static final String TAG = LoginActivity.class.getSimpleName();
+
+    private static final String CLIENT_ID = "";
+    private static final String REDIRECT_URI = "";
+
+    private boolean _employerMode = true;
 
     /**
      * Called when the activity is first created.
@@ -28,7 +34,8 @@ public class LoginActivity extends Activity {
                         _employerMode = false;
                         break;
                     case R.id.button_ok:
-                        login(((EditText)view).getText().toString(), _employerMode);
+                        final EditText text = (EditText) findViewById(R.id.text_login);
+                        login(text.getText().toString(), _employerMode);
                         break;
                 }
             }
@@ -41,9 +48,15 @@ public class LoginActivity extends Activity {
 
     private void login(final String user, final boolean employerMode) {
         if (employerMode) {
-
+            final Intent intent = new Intent(this, EmployerActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.putExtra(EmployerActivity.KEY_EMPLOYER, user);
+            startActivity(intent);
         } else {
-
+            final Intent intent = new Intent(this, UserActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.putExtra(UserActivity.KEY_USER, user);
+            startActivity(intent);
         }
     }
 }

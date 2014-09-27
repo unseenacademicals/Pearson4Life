@@ -2,11 +2,13 @@ package com.example.Pearson4Life.frontend;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
@@ -58,21 +60,21 @@ public class DrawerActivity extends Activity {
         });
 
         _drawerToggle = new ActionBarDrawerToggle(this, _drawerLayout,
-                R.drawable.icon, R.string.drawer_open,
+                R.drawable.ic_drawer, R.string.drawer_open,
                 R.string.drawer_closed) {
 
             /** Called when a drawer has settled in a completely closed state. */
             @Override
             public void onDrawerClosed(final View view) {
                 super.onDrawerClosed(view);
-                //MainActivity.this.supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             /** Called when a drawer has settled in a completely open state. */
             @Override
             public void onDrawerOpened(final View drawerView) {
                 super.onDrawerOpened(drawerView);
-                //MainActivity.this.supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
 
@@ -81,6 +83,33 @@ public class DrawerActivity extends Activity {
         // Required to allow opening drawer via app icon
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
+        _drawerToggle.setDrawerIndicatorEnabled(true); // Changes home button to drawer toggle
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (_drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void openFragment(final Class<? extends Fragment> clazz, final Bundle args) {
+        closeKeyboard();
+
+        final Fragment fragment = Fragment.instantiate(this, clazz.getName(), args);
+
+        // Insert the fragment by replacing any existing fragment and adding it to the back stack
+        final FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.content_frame, fragment)
+                .addToBackStack(null)
+                .commit();
+
+        _drawerToggle.setDrawerIndicatorEnabled(false); // Changes home button to up caret
     }
 
     public void popFragment() {
